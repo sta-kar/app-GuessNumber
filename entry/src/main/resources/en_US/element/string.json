@@ -9,14 +9,11 @@
       "value": "description"
     },
     {
-      "name": "EntryAbility_label",
-      "value": "label"
-    },
-    {
       "name": "guess_number",
       "value": "Guess Number"
     },
     { "name": "game_title", "value": "Guess a number" },
+    { "name": "open_rules_accessibility", "value": "Open game rules" },
     { "name": "guess_placeholder", "value": "Enter a number from 1 to 100" },
     { "name": "invalid_guess", "value": "Enter a whole number from 1 to 100." },
     { "name": "guess_button", "value": "Guess" },

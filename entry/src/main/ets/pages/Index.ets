@@ -19,10 +19,13 @@ struct Index {
   successController: CustomDialogController = new CustomDialogController({
     builder: successComponent({
       guessTime: this.guessTime,
-      isWin: this.isWin,
-      text: this.text,
-      answer: this.answer
+      onClose: () => {
+        this.closeSuccessDialog()
+      }
     }),
+    cancel: () => {
+      this.startNewRound()
+    },
     alignment: DialogAlignment.Center,
     customStyle: true
   })
@@ -32,12 +35,17 @@ struct Index {
     this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE)
   }
 
-  resetNumber(): void {
+  startNewRound(): void {
     this.text = ''
     this.guessTime = 0
     this.answer = randomNumberGenerator()
     this.isWin = false
     this.isInputInvalid = false
+  }
+
+  closeSuccessDialog(): void {
+    this.successController.close()
+    this.startNewRound()
   }
 
   submitNumber(): void {
@@ -72,6 +80,8 @@ struct Index {
           Image($r('app.media.info_icon'))
             .width(44)
             .height(44)
+            .accessibilityText($r('app.string.open_rules_accessibility'))
+            .accessibilityRole(AccessibilityRoleType.BUTTON)
             .onClick(() => {
               this.infoController.open()
             })
@@ -132,7 +142,7 @@ struct Index {
               .guessButtonStyle('#F8F3FF', '#6024B5')
               .layoutWeight(1)
               .onClick(() => {
-                this.resetNumber()
+                this.startNewRound()
               })
           }
           .width('100%')
@@ -189,20 +199,9 @@ function hintTextStyle() {
 
 @CustomDialog
 struct successComponent {
-  @Link guessTime: number
-  @Link isWin: boolean
-  @Link text: string
-  @Link answer: number
+  @Prop guessTime: number
+  onClose: () => void = () => {}
   controller?: CustomDialogController
-
-  aboutToDisappear(): void {
-    if (this.isWin) {
-      this.text = ''
-      this.guessTime = 0
-      this.answer = randomNumberGenerator()
-      this.isWin = false
-    }
-  }
 
   build() {
     Column({ space: 20 }) {
@@ -223,7 +222,7 @@ struct successComponent {
       if (this.guessTime === 1) {
         Text($r('app.string.win_first'))
           .successTextStyle(this.guessTime <= 5)
-      } else if (this.guessTime < 5) {
+      } else if (this.guessTime <= 5) {
         Text($r('app.string.win_quick', this.guessTime))
           .successTextStyle(this.guessTime <= 5)
       } else if (this.guessTime < 10) {
@@ -244,7 +243,7 @@ struct successComponent {
         .type(ButtonType.Normal)
         .borderRadius(16)
         .onClick(() => {
-          this.controller?.close()
+          this.onClose()
         })
     }
     .padding(24)
